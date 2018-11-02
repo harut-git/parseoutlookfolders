@@ -2,7 +2,6 @@ import errno
 import json
 import os
 import time
-import requests
 
 import win32com.client
 
@@ -27,9 +26,7 @@ def parse_folder(folder_obj, mail_quantity):
             filing_status = ''
             for j in message.UserProperties:
                 if j.Name == 'Destination':
-                    print destination
                     destination = str(j)
-                    print destination
                 elif j.Name == 'FilingStatus':
                     filing_status = str(j)
             if message.SenderEmailType == "EX":
