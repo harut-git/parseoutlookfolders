@@ -1,8 +1,8 @@
 import errno
 import json
 import os
-import time
 
+import pywintypes
 import win32com.client
 
 # -- Static variables -- #
@@ -10,8 +10,11 @@ import win32com.client
 PR_SMTP_ADDRESS = "http://schemas.microsoft.com/mapi/proptag/0x39FE001E"
 
 outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-inbox = outlook.GetDefaultFolder(6).parent
-exec_time = str(time.time())
+inbox = outlook.GetDefaultFolder(6)
+print(inbox)
+my_items = inbox.Items
+f = my_items.GetLast()
+k = f.Copy()
 
 
 def parse_folder(folder_obj, mail_quantity):
@@ -48,8 +51,8 @@ def parse_folder(folder_obj, mail_quantity):
                 'from': sender,
                 'recipients': current_recipients,
                 'destination': destination,
-                'filing_status': filing_status
-                # 'body': body.encode("utf-8")
+                'filing_status': filing_status,
+                'body': body.encode("utf-8")
             })
         i += 1
 
@@ -59,10 +62,10 @@ def parse_folder(folder_obj, mail_quantity):
     path = str(folder_obj.FolderPath).replace('\\', '/') + '.json'
     if path[:2] == '//':
         path = path[2:]
-    final_path = 'Results' + exec_time + '/' + path
+    final_path = 'Results' + '/' + path
     if not os.path.exists(os.path.dirname(final_path)):
         try:
-            print final_path
+            print(final_path)
             os.makedirs(os.path.dirname(final_path))
         except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
@@ -82,5 +85,5 @@ def dig_folders(folder):
             dig_folders(folder.Folders(i))
 
 
-dig_folders(inbox)
-print "Completed Successfully..."
+# dig_folders(inbox)
+print("Completed Successfully...")
