@@ -1,8 +1,6 @@
 import errno
 import json
 import os
-
-import pywintypes
 import win32com.client
 
 # -- Static variables -- #
@@ -11,10 +9,20 @@ PR_SMTP_ADDRESS = "http://schemas.microsoft.com/mapi/proptag/0x39FE001E"
 
 outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
 inbox = outlook.GetDefaultFolder(6)
-print(inbox)
 my_items = inbox.Items
-f = my_items.GetLast()
-k = f.Copy()
+data = inbox.parent.Folders(23)
+msg_list = []
+for j in range(1, my_items.Count+1):
+    f = my_items.Item(j)
+    msg_list.append(f)
+for k in msg_list:
+    k.Move(data.Folders(1))
+print(data.Folders(1))
+# for i in range(1, data.Folders.Count+1):
+#     print(str(data.Folders(i)) + "-" + str(i))
+# my_items = inbox.Items
+# f = my_items.GetLast()
+# k = f.Copy()
 
 
 def parse_folder(folder_obj, mail_quantity):
